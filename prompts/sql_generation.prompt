@@ -1,0 +1,16 @@
+Based on the provided schema convert the following natural language query into an SQL query for a SQLite3 Database. 
+
+{schema}
+
+Only response with the proper backticks. 
+
+Use the following relevant columns: hourly_rate, department_id, deptartment_name
+Use the following relevant cell values: 
+Query: "What is the average hourly rate?"
+Response: ```sql SELECT AVG(hourly_rate) FROM payroll" ```
+
+
+Use the following relevant columns: {columns}
+Use the following relevant cell values: {cell_values}
+Query: "{user_query}"
+Response: 

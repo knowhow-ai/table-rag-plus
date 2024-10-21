@@ -1,0 +1,13 @@
+Given a database schema and a user query, suggest the most relevant column names and any possible cell values that would be helpful for answering the query.
+Please provide both column names and possible cell values as JSON arrays. Only response in JSON with the proper backticks. The JSON response should be a dictionary with two keys, "columns", and "cell_values". Each of these values should be an array of strings. For example, the following is a valid query! No commentary is needed.
+
+Schema: {schema}
+
+User Query: What is Sarah Fienman's hourly rate?
+Response: ```json {{"columns": ["hourly_rate", "name"], "cell_values": ["Sarah Fineman"]}} ```
+
+User Query: What is the average hourly rate?
+Response: ```json {{"columns": ["hourly_rate"], "cell_values": []}} ```
+
+User Query: {user_query}
+Response: 

@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "table-rag"
+version = "0.1.0"
+description = ""
+authors = ["Kartik Thakore <kartik@thakore.ai>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+openai = "^1.52.0"
+faker = "^30.8.0"
+sqlparse = "^0.5.1"
+onnxruntime = "^1.19.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

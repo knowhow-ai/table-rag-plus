@@ -1,0 +1,99 @@
+[
+    {
+      "name": "length",
+      "description": "Returns the number of characters in a string.",
+      "category": "string",
+      "example": "SELECT length('Hello, World!'); -- Returns 13"
+    },
+    {
+      "name": "upper",
+      "description": "Converts a string to uppercase.",
+      "category": "string",
+      "example": "SELECT upper('Hello, World!'); -- Returns 'HELLO, WORLD!'"
+    },
+    {
+      "name": "lower",
+      "description": "Converts a string to lowercase.",
+      "category": "string",
+      "example": "SELECT lower('Hello, World!'); -- Returns 'hello, world!'"
+    },
+    {
+      "name": "substr",
+      "description": "Extracts a substring from a string starting at a specified position.",
+      "category": "string",
+      "example": "SELECT substr('Hello, World!', 8, 5); -- Returns 'World'"
+    },
+    {
+      "name": "replace",
+      "description": "Replaces occurrences of a specified substring with another string.",
+      "category": "string",
+      "example": "SELECT replace('Hello, World!', 'World', 'SQLite'); -- Returns 'Hello, SQLite!'"
+    },
+    {
+      "name": "trim",
+      "description": "Removes leading and trailing spaces from a string.",
+      "category": "string",
+      "example": "SELECT trim('   Hello, World!   '); -- Returns 'Hello, World!'"
+    },
+    {
+      "name": "abs",
+      "description": "Returns the absolute value of a number.",
+      "category": "math",
+      "example": "SELECT abs(-10); -- Returns 10"
+    },
+    {
+      "name": "round",
+      "description": "Rounds a number to a specified number of decimal places.",
+      "category": "math",
+      "example": "SELECT round(3.14159, 2); -- Returns 3.14"
+    },
+    {
+      "name": "ceil",
+      "description": "Returns the smallest integer greater than or equal to a number.",
+      "category": "math",
+      "example": "SELECT ceil(3.14159); -- Returns 4"
+    },
+    {
+      "name": "random",
+      "description": "Generates a random integer between -9223372036854775808 and +9223372036854775807.",
+      "category": "math",
+      "example": "SELECT random(); -- Returns a random integer"
+    },
+    {
+      "name": "date",
+      "description": "Returns the date in 'YYYY-MM-DD' format.",
+      "category": "date_time",
+      "example": "SELECT date('now'); -- Returns the current date"
+    },
+    {
+      "name": "time",
+      "description": "Returns the time in 'HH:MM:SS' format.",
+      "category": "date_time",
+      "example": "SELECT time('now'); -- Returns the current time"
+    },
+    {
+      "name": "datetime",
+      "description": "Returns the date and time in 'YYYY-MM-DD HH:MM:SS' format.",
+      "category": "date_time",
+      "example": "SELECT datetime('now'); -- Returns the current date and time"
+    },
+    {
+      "name": "timediff",
+      "description": "Calculates the difference between two times.",
+      "category": "date_time",
+      "example": "SELECT timediff('2024-10-21 14:00:00', '2024-10-21 12:30:00'); -- Returns '01:30:00'"
+    },
+    {
+      "name": "count",
+      "description": "Counts the number of items in a set.",
+      "category": "aggregate",
+      "example": "SELECT count(*) FROM employees; -- Returns the total number of employees"
+    },
+    {
+      "name": "sum",
+      "description": "Calculates the sum of a set of numbers.",
+      "category": "aggregate",
+      "example": "SELECT sum(salary) FROM employees; -- Returns the total sum of all salaries"
+    }
+  ]
+  
