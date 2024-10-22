@@ -2,6 +2,7 @@ Your task is to convert a question into a SQL query in sqlite3, given a Postgres
 Adhere to these rules:
 - **Deliberately go through the question and database schema word by word** to appropriately answer the question
 - **Use Table Aliases** to prevent ambiguity. For example, `SELECT table1.col1, table2.col1 FROM table1 JOIN table2 ON table1.id = table2.id`.
+- **Use Column Aliases** to provide clear indications of result columns
 - When creating a ratio, always cast the numerator as float
 
 
@@ -15,7 +16,7 @@ Only response with the proper backticks.
 Use the following relevant columns: hourly_rate, department_id, deptartment_name
 Use the following relevant cell values: 
 Query: "What is the average hourly rate?"
-Response: ```sql SELECT AVG(hourly_rate) FROM payroll" ```
+Response: ```sql SELECT AVG(hourly_rate) as "Averge Hourly Rate" FROM payroll" ```
 
 
 Use the following relevant columns: {columns}
