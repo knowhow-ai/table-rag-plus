@@ -39,6 +39,7 @@ class TableRAG:
         self.sql_generation_prompt_template = load_prompt_template('prompts/sql_generation.prompt')
         self.query_classification_prompt_template = load_prompt_template('prompts/query_classification.prompt')
         self.query_healing_prompt_template = load_prompt_template('prompts/query_healing.prompt')  # For query healing
+        self.explain_result_prompt_template = load_prompt_template('prompts/explain_result.prompt')  # For result explanation
 
     def schema_retrieval(self, max_sample_length=100):
         logging.debug("Doing schema Retrieval")
@@ -355,4 +356,29 @@ class TableRAG:
         except Exception as e:
             logging.error(f"Failed to heal SQL query: {e}")
             return None  # Return None if healing fails
+        
+    async def explain_result(self, result, prompt):
+        """
+        Explains the result of a query using the LLM.
+        """
+        # Prepare the prompt using the explain_result prompt template
+        explain_prompt = self.explain_result_prompt_template.format(
+            query=prompt,
+            result=result
+        )
+
+        logging.info(f"Sending explain result prompt to LLM: {explain_prompt}")
+
+        # Send the prompt to the LLM to generate an explanation
+        response = await self.llm_client.chat.completions.create(
+            model=LLM_MODEL,
+            messages=[{"role": "user", "content": explain_prompt}],
+            stream=False
+        )
+
+        explanation = response.choices[0].message.content.strip()
+
+        logging.info(f"Received explanation: {explanation}")
+
+        return explanation
 

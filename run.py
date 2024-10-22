@@ -31,10 +31,15 @@ if __name__ == "__main__":
                 result_tuple = await table_rag.execute_sql_query(sql_query)
                 results, columns = result_tuple
                 if results:
-                    print("\nResults:")
+                    result = tabulate(results, headers=columns, tablefmt="grid")
                     
                     # Use tabulate to print the table
-                    print(tabulate(results, headers=columns, tablefmt="grid"))
+                    print(result)
+
+                    explanation = await table_rag.explain_result(result, prompt)
+
+                    print("Explanation:\n", explanation)
+
 
                 print("\n")
             except ValueError as e:
