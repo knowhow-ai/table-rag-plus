@@ -104,7 +104,7 @@ This is the **first version** of **table-rag+**. It currently works only with **
 - **🤖 Auto-Prompt Generation for SQLite and Other Data Sources**: 
   - Automatic generation of optimized prompts based on database structure, starting with **SQLite**.
 - **🔍 Retrieval-Augmented Generation (RAG) Support**:
-  - Integrate **RAG** to enhance the system’s ability to answer questions by retrieving relevant documents alongside database queries.
+  - Integrate **RAG** to enhance the system’s ability to answer questions by retrieving relevant documents, support procedures alongside database queries.
 - **🔄 Move to SQLAlchemy**:
   - Expand beyond **SQLite** to support multiple databases by adopting **SQLAlchemy**, allowing integration with PostgreSQL, MySQL, and more.
 - **🛠️ Advanced Error Diagnostics**:
