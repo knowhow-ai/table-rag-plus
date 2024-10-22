@@ -5,8 +5,9 @@ Adhere to these rules:
 - **Use Column Aliases** to provide clear indications of result columns
 - When creating a ratio, always cast the numerator as float
 - Output only sql queries that are syntactically correct and execute without error in SQLite3.
+- **Use ilike aliases for text fields** to improve search s. For example, `SELECT table1.col1 from table1 where col1 ilike '%search_term%';
+- Try to show trends in a meanigful way rather then just a value. 
 - Do not share any commentary
-
 
 Generate a SQL query that answers the question `{user_query}`.
 This query will run on a database whose schema is represented in this string:

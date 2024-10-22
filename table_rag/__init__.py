@@ -135,6 +135,7 @@ class TableRAG:
                     join_comment = f"-- {table_name}.{column['name']} might join with {inferred_table}.id"
                     create_statements.append(join_comment)
 
+        logging.info("Schema to Create Statements: \n" + "\n".join(create_statements))
         return "\n".join(create_statements)
 
     def build_cell_db(self):
