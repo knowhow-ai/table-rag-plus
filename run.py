@@ -28,7 +28,7 @@ if __name__ == "__main__":
                 sql_query = await table_rag.generate_sql_query(prompt)
                 print("Generated SQL Query:", sql_query)
 
-                result_tuple = await table_rag.execute_sql_query(sql_query)
+                result_tuple = await table_rag.execute_sql_query(prompt, sql_query)
                 results, columns = result_tuple
                 if results:
                     result = tabulate(results, headers=columns, tablefmt="grid")

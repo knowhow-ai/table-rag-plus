@@ -1,8 +1,33 @@
-The following SQL query failed to execute:
-Query: "{original_query}"
-Error: "{error_message}"
+Your task is to fix the following SQLite3 SQL query given the natural language query, original SQL query and error.
+Adhere to these rules:
+- **Deliberately go through the question and database schema word by word** to appropriately answer the question
+- **Use Table Aliases** to prevent ambiguity. For example, `SELECT table1.col1, table2.col1 FROM table1 JOIN table2 ON table1.id = table2.id`.
+- **Use Column Aliases** to provide clear indications of result columns
+- When creating a ratio, always cast the numerator as float
+- Output only sql queries that are syntactically correct and execute without error in SQLite3.
+- Do not share any commentary
+
+The following SQLlite3 SQL query failed to execute:
+
+Original Natural Language Query:
+```
+    {prompt}
+```
+
+Query: 
+```sql
+    {original_query}
+```
+Error: 
+```
+    {error_message}
+```
 
 Based on the schema:
+```sql
 {schema}
+```
 
-Please provide a corrected SQL query.
+Please provide a corrected SQL query for SQLlite3. M
+
+Correct Query:

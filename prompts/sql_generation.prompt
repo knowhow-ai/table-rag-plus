@@ -1,9 +1,11 @@
-Your task is to convert a question into a SQL query in sqlite3, given a Postgres database schema.
+Your task is to convert a question into a SQL query in sqlite3, given a SQLite3 atabase schema.
 Adhere to these rules:
 - **Deliberately go through the question and database schema word by word** to appropriately answer the question
 - **Use Table Aliases** to prevent ambiguity. For example, `SELECT table1.col1, table2.col1 FROM table1 JOIN table2 ON table1.id = table2.id`.
 - **Use Column Aliases** to provide clear indications of result columns
 - When creating a ratio, always cast the numerator as float
+- Output only sql queries that are syntactically correct and execute without error in SQLite3.
+- Do not share any commentary
 
 
 Generate a SQL query that answers the question `{user_query}`.

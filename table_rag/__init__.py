@@ -285,7 +285,7 @@ class TableRAG:
 
         return response.choices[0].message.content.strip() == "Natural Language Query"
 
-    async def execute_sql_query(self, sql_query):
+    async def execute_sql_query(self, prompt, sql_query):
         """
         Executes an SQL query and retries up to self.retry_execute times if errors occur. 
         Uses the LLM to try and fix the query.
@@ -308,7 +308,7 @@ class TableRAG:
                 logging.error(f"Failed to execute query (Attempt {attempt + 1}): {e}")
 
                 # Send the error and original query to the LLM for healing, and await it
-                sql_query = await self.heal_sql_query(sql_query, last_error)  # Await the coroutine
+                sql_query = await self.heal_sql_query(prompt, sql_query, last_error)  # Await the coroutine
 
                 # If the LLM did not provide a valid correction, break the loop
                 if not sql_query:
@@ -321,13 +321,14 @@ class TableRAG:
         logging.error(f"Failed to execute the query after {self.retry_execute} attempts.")
         return None, None
 
-    async def heal_sql_query(self, failed_query, error_message):
+    async def heal_sql_query(self, prompt, failed_query, error_message):
         """
         Sends the failed SQL query and error message to the LLM, asking for a correction.
         """
         try:
             # Prepare the prompt using the healing prompt template
             healing_prompt = self.query_healing_prompt_template.format(
+                prompt=prompt,
                 original_query=failed_query,
                 error_message=error_message,
                 schema=self.schema_to_create_statements()
