@@ -1,6 +1,4 @@
-Here’s the updated README with instructions for using **Table-rag+** along with Chainlit and SQLite for a fictional BBQ manufacturing company database:
 
-```markdown
 # 🌟 **Table-rag+: A Self-Healing Query Generator for Tabular Data** 🌟
 
 **Table-rag+** is a self-healing query generator designed to assist with querying large-scale tables using language models (LMs). It expands upon the ideas introduced in the [TableRAG paper](https://arxiv.org/abs/2410.04739v1) by incorporating schema and cell retrieval, query expansion, and enhanced error-handling mechanisms, making it ideal for complex table queries. 
@@ -136,6 +134,6 @@ By using **table-rag+**, you can efficiently process natural language queries on
 ---
 
 If you have any questions, suggestions, or ideas for contributions, feel free to submit a pull request or reach out! 😊
-```
+
 
 This updated README includes instructions specific to the **Table-rag+** demo setup with **Chainlit**, highlights the fictional BBQ manufacturing database, and provides sample prompts for users to try out.
