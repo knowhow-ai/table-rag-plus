@@ -1,0 +1,8 @@
+The following SQL query failed to execute:
+Query: "{original_query}"
+Error: "{error_message}"
+
+Based on the schema:
+{schema}
+
+Please provide a corrected SQL query.

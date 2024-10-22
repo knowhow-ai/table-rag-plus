@@ -24,21 +24,27 @@ def load_prompt_template(file_path):
         return file.read()
 
 class TableRAG:
-    def __init__(self, db_path, llm_client, cell_encoding_budget=1000):
+    def __init__(self, db_path, llm_client, cell_encoding_budget=1000,retry_execute=3):
         self.db_path = db_path
         self.llm_client = llm_client
         self.cell_encoding_budget = cell_encoding_budget
-        self.schema = self.schema_retrieval()
-        self.cell_database = self.build_cell_db()
+        self.retry_execute = retry_execute 
 
+        schema_keys = self.schema_retrieval()
+        self.schema = schema_keys[0]
+        self.foreign_keys = schema_keys[1]
+        self.cell_database = self.build_cell_db()
         # Load prompt templates
         self.query_expansion_prompt_template = load_prompt_template('prompts/query_expansion.prompt')
         self.sql_generation_prompt_template = load_prompt_template('prompts/sql_generation.prompt')
         self.query_classification_prompt_template = load_prompt_template('prompts/query_classification.prompt')
+        self.query_healing_prompt_template = load_prompt_template('prompts/query_healing.prompt')  # For query healing
 
     def schema_retrieval(self, max_sample_length=100):
         logging.debug("Doing schema Retrieval")
         schema = {}
+        foreign_keys = {}
+        
         try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
@@ -61,6 +67,20 @@ class TableRAG:
                     ]
                 }
 
+                # Extract foreign keys
+                cursor.execute(f"PRAGMA foreign_key_list({table_name});")
+                foreign_key_info = cursor.fetchall()
+
+                foreign_keys[table_name] = [
+                    {
+                        "from": fk[3],  # local column
+                        "to_table": fk[2],  # referenced table
+                        "to": fk[4]  # referenced column
+                    }
+                    for fk in foreign_key_info
+                ]
+
+                # Get sample data
                 cursor.execute(f"SELECT * FROM {table_name} LIMIT 1;")
                 sample_row = cursor.fetchone()
 
@@ -73,10 +93,48 @@ class TableRAG:
                             column["sample"] = sample_value
 
             conn.close()
+
         except sqlite3.Error as e:
             logging.error(f"Failed to retrieve database schema: {e}")
 
-        return schema
+        return schema, foreign_keys
+
+    def schema_to_create_statements(self):
+        create_statements = []
+        
+        # Retrieve schema and foreign key information
+        schema, foreign_keys = self.schema_retrieval()
+
+        for table_name, table_data in schema.items():
+            columns = table_data["columns"]
+            column_definitions = []
+            
+            for column in columns:
+                column_definitions.append(f"{column['name']} {column['type']}")
+            
+            # Create the table definition statement
+            create_statement = f"CREATE TABLE {table_name} ({', '.join(column_definitions)});"
+            create_statements.append(create_statement)
+            
+            # Add samples as comments
+            for column in columns:
+                if column["sample"]:
+                    create_statements.append(f"-- Sample: {column['name']} = {column['sample']}")
+            
+            # Add foreign key join hints as comments
+            if table_name in foreign_keys:
+                for fk in foreign_keys[table_name]:
+                    join_comment = f"-- {table_name}.{fk['from']} can be joined with {fk['to_table']}.{fk['to']}"
+                    create_statements.append(join_comment)
+            
+            # Optionally add inferred join hints based on naming convention (_id pattern)
+            for column in columns:
+                if column['name'].endswith('_id'):
+                    inferred_table = column['name'][:-3]  # e.g., 'product_id' -> 'product'
+                    join_comment = f"-- {table_name}.{column['name']} might join with {inferred_table}.id"
+                    create_statements.append(join_comment)
+
+        return "\n".join(create_statements)
 
     def build_cell_db(self):
         """
@@ -133,7 +191,7 @@ class TableRAG:
 
         # Use the external query_expansion.prompt template
         query_expansion_prompt = self.query_expansion_prompt_template.format(
-            schema=json.dumps(self.schema, indent=4),
+            schema=self.schema_to_create_statements(),
             user_query=prompt
         )
 
@@ -186,11 +244,13 @@ class TableRAG:
 
         # Step 3: Use the relevant cells for query generation
         sql_prompt = self.sql_generation_prompt_template.format(
-            schema=json.dumps(self.schema, indent=4),
+            schema=self.schema_to_create_statements(),
             user_query=natural_language_query,
             columns=columns,
             cell_values=json.dumps(relevant_cells, indent=4)
         )
+
+        logging.info(sql_prompt)
 
         response = await self.llm_client.chat.completions.create(
             model=LLM_MODEL,
@@ -208,44 +268,6 @@ class TableRAG:
         # Parse and refine SQL query
         return sql_query
 
-    # def refine_sql_query(self, parsed_query, columns):
-    #     """
-    #     Refines the SQL query by using sqlparse to validate, restructure, or optimize it.
-    #     If sqlparse fails, skip refinement and log the error.
-    #     """
-    #     try:
-    #         new_query = []
-
-    #         for token in parsed_query.tokens:
-    #             if token.ttype is DML and token.value.upper() == 'SELECT':
-    #                 new_query.append(token.value)
-
-    #                 # Use token_next correctly to get the next token after SELECT
-    #                 next_token_tuple = parsed_query.token_next(parsed_query.token_index(token))
-    #                 if next_token_tuple:  # Ensure token_next found a token
-    #                     next_token = next_token_tuple[1]
-    #                     # Replace * with the actual columns retrieved by query expansion
-    #                     if isinstance(next_token, Identifier) or isinstance(next_token, IdentifierList):
-    #                         new_query.append(f" {', '.join(columns)} ")
-    #                     else:
-    #                         new_query.append(str(next_token))
-    #                 else:
-    #                     # If no next token, fallback to the original token
-    #                     new_query.append(token.value)
-    #             else:
-    #                 new_query.append(str(token))
-
-    #         refined_query = ' '.join(new_query)
-    #         return refined_query
-
-    #     except Exception as e:
-    #         # If sqlparse fails, log the error and skip refinement
-    #         logging.error(f"Failed to refine SQL query using sqlparse: {e}")
-    #         logging.info("Falling back to unrefined SQL query")
-    #         # Fallback: return the unmodified query as a string
-    #         return ' '.join(str(token) for token in parsed_query.tokens)
-
-
 
     async def is_natural_language_query(self, input_text):
         """
@@ -262,16 +284,75 @@ class TableRAG:
 
         return response.choices[0].message.content.strip() == "Natural Language Query"
 
-    def execute_sql_query(self, sql_query):
+    async def execute_sql_query(self, sql_query):
+        """
+        Executes an SQL query and retries up to self.retry_execute times if errors occur. 
+        Uses the LLM to try and fix the query.
+        """
+        attempt = 0
+        last_error = None
+
+        while attempt < self.retry_execute:
+            try:
+                logging.info(f"Executing SQL query (Attempt {attempt + 1}/{self.retry_execute}): {sql_query}")
+                conn = sqlite3.connect(self.db_path)
+                cursor = conn.cursor()
+                cursor.execute(sql_query)  # Ensure sql_query is a string, not coroutine
+                results = cursor.fetchall()
+                columns = [description[0] for description in cursor.description]
+                conn.close()
+                return results, columns  # Successful execution
+            except sqlite3.Error as e:
+                last_error = str(e)
+                logging.error(f"Failed to execute query (Attempt {attempt + 1}): {e}")
+
+                # Send the error and original query to the LLM for healing, and await it
+                sql_query = await self.heal_sql_query(sql_query, last_error)  # Await the coroutine
+
+                # If the LLM did not provide a valid correction, break the loop
+                if not sql_query:
+                    logging.error("No valid correction from LLM. Stopping retry attempts.")
+                    break
+
+            attempt += 1
+
+        # If all retries failed, return the last error encountered
+        logging.error(f"Failed to execute the query after {self.retry_execute} attempts.")
+        return None, None
+
+    async def heal_sql_query(self, failed_query, error_message):
+        """
+        Sends the failed SQL query and error message to the LLM, asking for a correction.
+        """
         try:
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
-            cursor.execute(sql_query)
-            results = cursor.fetchall()
-            columns = [description[0] for description in cursor.description]
-            conn.close()
-            return results, columns
-        except sqlite3.Error as e:
-            logging.error(f"Failed to execute query: {e}")
-            return None, None
+            # Prepare the prompt using the healing prompt template
+            healing_prompt = self.query_healing_prompt_template.format(
+                original_query=failed_query,
+                error_message=error_message,
+                schema=self.schema_to_create_statements()
+            )
+
+            logging.info(f"Sending query healing prompt to LLM: {healing_prompt}")
+
+            # Send the prompt to the LLM to generate a corrected SQL query
+            response = await self.llm_client.chat.completions.create(
+                model=LLM_MODEL,
+                messages=[{"role": "user", "content": healing_prompt}],
+                stream=False
+            )
+
+            # Extract the corrected SQL query from the LLM response
+            corrected_query = response.choices[0].message.content.strip()
+
+            logging.info(f"Received corrected SQL query: {corrected_query}")
+
+            # Extract SQL from code block (if it's inside a code block)
+            corrected_query = re.search(r'```sql(.*?)```', corrected_query, re.DOTALL)
+            if corrected_query:
+                return corrected_query.group(1).strip()
+
+            return corrected_query  # Return the corrected query
+        except Exception as e:
+            logging.error(f"Failed to heal SQL query: {e}")
+            return None  # Return None if healing fails
 

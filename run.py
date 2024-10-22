@@ -4,7 +4,7 @@ import asyncio
 import os
 from table_rag import TableRAG
 from openai import AsyncOpenAI  # Assuming you're using OpenAI API for LLM
-
+from tabulate import tabulate
 
 LLM_API_SERVER = os.environ.get("LLM_API_SERVER", "http://localhost:11434/v1")
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "ollama")
@@ -28,12 +28,15 @@ if __name__ == "__main__":
                 sql_query = await table_rag.generate_sql_query(prompt)
                 print("Generated SQL Query:", sql_query)
 
-                results, columns = table_rag.execute_sql_query(sql_query)
+                result_tuple = await table_rag.execute_sql_query(sql_query)
+                results, columns = result_tuple
                 if results:
                     print("\nResults:")
-                    header = " | ".join(columns)
-                    for row in results:
-                        print(row)
+                    
+                    # Use tabulate to print the table
+                    print(tabulate(results, headers=columns, tablefmt="grid"))
+
+                print("\n")
             except ValueError as e:
                 print(f"Error: {e}")
 
