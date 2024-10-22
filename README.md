@@ -1,8 +1,9 @@
+Here’s the updated README with instructions for using **Table-rag+** along with Chainlit and SQLite for a fictional BBQ manufacturing company database:
 
-
+```markdown
 # 🌟 **Table-rag+: A Self-Healing Query Generator for Tabular Data** 🌟
 
-**Table-rag+** is a naive implementation of an advanced, self-healing framework for understanding large-scale tables using language models (LMs). It extends upon the ideas introduced in the [TableRAG paper](https://arxiv.org/abs/2410.04739v1) by incorporating schema and cell retrieval, query expansion, and enhanced error-handling mechanisms, making it suitable for complex table queries. This is the **first version** of **table-rag+** and is designed for **SQLite databases** but not yet optimized for large-scale datasets. Future research will focus on scaling this system to handle larger environments and more complex queries.
+**Table-rag+** is a self-healing query generator designed to assist with querying large-scale tables using language models (LMs). It expands upon the ideas introduced in the [TableRAG paper](https://arxiv.org/abs/2410.04739v1) by incorporating schema and cell retrieval, query expansion, and enhanced error-handling mechanisms, making it ideal for complex table queries. 
 
 ---
 
@@ -26,6 +27,7 @@
 - 📦 Poetry for dependency management
 - 🗄️ SQLite3 (usually included with Python)
 - 🧠 [**Ollama**](https://ollama.com/) with [**Mistral-Nemo**](https://ollama.com/library/mistral-nemo) model 
+- 🖥️ [**Chainlit**](https://docs.chainlit.io/)
 
 ### 🚀 **Step-by-Step Setup**
 
@@ -52,21 +54,36 @@
    sudo apt-get install sqlite3
    ```
 
+5. **Prepare the Database**:
+   A SQLite database named `bbq_manufacturing.db` will be created when you run the demo.
+
 ---
 
-## 🖥️ **Usage**
+## 🖥️ **Demo**
 
-To run the main script and generate SQL queries from natural language prompts:
+To run the demo:
 
 ```bash
-poetry run python run.py
+poetry run chainlit run app.py
 ```
 
-You will be prompted to input natural language queries, which will be translated into SQL and executed against the SQLite database.
+This launches the Chainlit application where you can enter natural language queries. **Table-rag+** will translate them into SQL and execute them against the fictional BBQ manufacturing company's SQLite database.
 
-### ⚡ **Self-Healing Feature**
+### 🛠️ **Example Prompts**
 
-If a query fails during execution, **table-rag+** will:
+Here are some example prompts you can use:
+
+- **"Who is selling the most BBQ sauce?"**
+- **"Show me the total sales for BBQ grills in the last year."**
+- **"What is the average salary of employees in the HR department?"**
+- **"Which employee worked the most hours last month?"**
+- **"What is the gross pay for employees in the Marketing department?"**
+
+---
+
+## ⚡ **Self-Healing Feature**
+
+If a query fails during execution, **Table-rag+** will:
 1. Attempt to heal the query using an LLM.
 2. Retry execution up to **three times**.
 3. Return an error if the retries are unsuccessful.
@@ -119,3 +136,6 @@ By using **table-rag+**, you can efficiently process natural language queries on
 ---
 
 If you have any questions, suggestions, or ideas for contributions, feel free to submit a pull request or reach out! 😊
+```
+
+This updated README includes instructions specific to the **Table-rag+** demo setup with **Chainlit**, highlights the fictional BBQ manufacturing database, and provides sample prompts for users to try out.

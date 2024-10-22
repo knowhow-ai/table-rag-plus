@@ -1,4 +1,4 @@
-Your task is to convert a question into a SQL query in sqlite3, given a SQLite3 atabase schema.
+Your task is to go beyond the current to analyze more factors into the SQLite3 database to augment an answer.
 Adhere to these rules:
 - **Deliberately go through the question and database schema word by word** to appropriately answer the question
 - **Use Table Aliases** to prevent ambiguity. For example, `SELECT table1.col1, table2.col1 FROM table1 JOIN table2 ON table1.id = table2.id`.
@@ -8,22 +8,25 @@ Adhere to these rules:
 - **Use ilike aliases for text fields** to improve search s. For example, `SELECT table1.col1 from table1 where col1 ilike '%search_term%';
 - Try to show trends in a meanigful way rather then just a value. 
 - Do not share any commentary
+- Only response with the proper backticks. 
 - Show only one query or combine queries
 
-Generate a SQL query that answers the question `{user_query}`.
 This query will run on a database whose schema is represented in this string:
+
 {schema}
 
+The previous DB Sql was:
+```sql
+{previous_sql}
+```
+The Previous Result was:
+```sqlite3_result
+{previous_result}
+```
+The provided answer was:
+```markdown
+{explaination}
+```
 
-Only response with the proper backticks. 
-
-Use the following relevant columns: hourly_rate, department_id, deptartment_name
-Use the following relevant cell values: 
-Query: "What is the average hourly rate?"
-Response: ```sql SELECT AVG(hourly_rate) as "Averge Hourly Rate" FROM payroll" ```
-
-
-Use the following relevant columns: {columns}
-Use the following relevant cell values: {cell_values}
 Query: "{user_query}"
 Response: 

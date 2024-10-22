@@ -7,12 +7,13 @@ Adhere to these rules:
 - Output only sql queries that are syntactically correct and execute without error in SQLite3.
 - Do not share any commentary
 
-The following SQLlite3 SQL query failed to execute:
 
 Original Natural Language Query:
 ```
     {prompt}
 ```
+
+The following SQLlite3 SQL query failed to execute:
 
 Query: 
 ```sql
