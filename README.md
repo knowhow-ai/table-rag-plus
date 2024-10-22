@@ -25,13 +25,13 @@
 - 🐍 Python 3.7+
 - 📦 Poetry for dependency management
 - 🗄️ SQLite3 (usually included with Python)
-- 🧠 **Ollama LLM** with **Mistral-Nemo** model
+- 🧠 [**Ollama**](https://ollama.com/) with [**Mistral-Nemo**](https://ollama.com/library/mistral-nemo) model 
 
 ### 🚀 **Step-by-Step Setup**
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-repo/table-rag-plus.git
+   git clone git@github.com:knowhow-ai/table-rag-plus.git
    cd table-rag-plus
    ```
 
